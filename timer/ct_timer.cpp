@@ -13,14 +13,16 @@ CT_Timer::~CT_Timer(){
 
 int64_t CT_Timer::Schedule(Handler handler,void *args,uint32_t delay,uint32_t interval,uint32_t times)
 {
+    cout<<"t id:"<<t.get_id()<<endl;
     if(started == false){
-        started = true;
         handler_ = handler;
         delay_ = delay;
         times_ = times;
         interval_ = interval;
-        t = thread(&CT_Timer::loop,this);
+        thread t1(&CT_Timer::loop,this);
+        t = std::move(t1);
         args_ = args;
+        started = true;
         return (int64_t)(void *)&t;   
     }
     cout<<"schedule can be called only once!!"<<endl;
@@ -32,6 +34,13 @@ bool CT_Timer::SendCmd(long cmd)
     q.enqueue(cmd);
 }
 
+void CT_Timer::join(){
+   if(started)
+    {
+        t.join();
+    }
+}
+
 int32_t CT_Timer::Cancel()
 {
     if(started == false)
@@ -40,13 +49,15 @@ int32_t CT_Timer::Cancel()
         return -1;
     }
     q.enqueue(CMD_EXIT);
-    t.detach();
+//    t.detach();
     return 0;
 }
 
 void CT_Timer::loop(){
     uint32_t tmptimes = 0;
     uint32_t handlerRuntime = 0;
+
+    cout<<"t id:"<<t.get_id()<<endl;
     while(true)
     {
 
@@ -86,6 +97,7 @@ void CT_Timer::loop(){
             tmptimes++;
         }
     }
+    started = false;
 }
 
 }

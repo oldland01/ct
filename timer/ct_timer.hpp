@@ -21,6 +21,7 @@ public:
     int64_t Schedule(Handler handler,void *args,uint32_t delay,uint32_t interval,uint32_t times);
     bool SendCmd(long cmd);
     int32_t Cancel();
+    void join();
 private:
     void loop();
     moodycamel::BlockingConcurrentQueue<long> q;

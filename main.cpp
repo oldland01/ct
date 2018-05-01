@@ -26,10 +26,10 @@ auto hlr = [=](void *args,long cmd)->int32_t{
 int main(int argc,char *argv[]){
     ct::CT_Timer timer;
     Test test;
-    timer.Schedule(test,nullptr,5000,2000,10);
+    int64_t t = timer.Schedule(test,nullptr,5000,2000,10);
     //timer.Schedule(hlr,nullptr,5000,2000,10);
     this_thread::sleep_for(chrono::seconds(20));
     timer.Cancel();
-    this_thread::sleep_for(chrono::seconds(100));
+    timer.join();
     return 0;
 }

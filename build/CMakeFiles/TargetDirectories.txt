@@ -1,1 +1,0 @@
-/home/lxy/mygithub/ct/build/CMakeFiles/test.dir

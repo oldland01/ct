@@ -1,6 +1,6 @@
 #include "ct_timer.hpp"
 
-int32_t  handler(void *args)
+int32_t  handler(void *args,long cmd)
 {
     cout<<"in handler1"<<endl;
     return 0;
@@ -12,13 +12,13 @@ public:
     }
     ~Test(){
     }
-    int32_t operator()(void *args){
+    int32_t operator()(void *args,long cmd){
         cout<<"in handler2"<<endl;
         return 0;
     }
 };
 
-auto hlr = [=](void *args)->int32_t{
+auto hlr = [=](void *args,long cmd)->int32_t{
    cout<<"in handler 3"<<endl;
 };
 

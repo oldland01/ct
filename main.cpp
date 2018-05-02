@@ -13,7 +13,7 @@ public:
     ~Test(){
     }
     int32_t operator()(void *args,long cmd){
-        cout<<"in handler2"<<endl;
+        cout<<"in handler2:"<<cmd<<endl;
         return 0;
     }
 };
@@ -26,10 +26,15 @@ auto hlr = [=](void *args,long cmd)->int32_t{
 int main(int argc,char *argv[]){
     ct::CT_Timer timer;
     Test test;
-    int64_t t = timer.Schedule(test,nullptr,5000,2000,10);
+    //int64_t t = timer.Schedule(test,nullptr,5000,2000,10);
     //timer.Schedule(hlr,nullptr,5000,2000,10);
-    this_thread::sleep_for(chrono::seconds(20));
+   // this_thread::sleep_for(chrono::seconds(20));
+    //timer.Cancel();
+    timer.Schedule(handler,nullptr); 
+    timer.SendCmd(2); 
+    this_thread::sleep_for(chrono::seconds(5));
     timer.Cancel();
-    timer.join();
+    timer.Join();
+    cout<<"exit main"<<endl;
     return 0;
 }

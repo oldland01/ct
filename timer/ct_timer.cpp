@@ -19,7 +19,7 @@ int64_t CT_Timer::Schedule(Handler handler,void *args,uint32_t delay,uint32_t in
         delay_ = delay;
         times_ = times;
         interval_ = interval;
-        thread t1(&CT_Timer::loop,this);
+        thread t1(&CT_Timer::LoopTimer,this);
         t = std::move(t1);
         args_ = args;
         started = true;
@@ -29,12 +29,25 @@ int64_t CT_Timer::Schedule(Handler handler,void *args,uint32_t delay,uint32_t in
     return -1;
 }
 
+int64_t CT_Timer::Schedule(Handler handler,void *args)
+{
+    if(started == false)
+    {
+        handler_ = handler;
+        args_ = args;
+        t = thread(&CT_Timer::LoopThread,this);
+        started = true;
+        return (int64_t)(void *)&t;   
+    }
+    return -1;
+}
+
 bool CT_Timer::SendCmd(long cmd)
 {
     q.enqueue(cmd);
 }
 
-void CT_Timer::join(){
+void CT_Timer::Join(){
    if(started)
     {
         t.join();
@@ -53,7 +66,7 @@ int32_t CT_Timer::Cancel()
     return 0;
 }
 
-void CT_Timer::loop(){
+void CT_Timer::LoopTimer(){
     uint32_t tmptimes = 0;
     uint32_t handlerRuntime = 0;
 
@@ -98,6 +111,22 @@ void CT_Timer::loop(){
         }
     }
     started = false;
+}
+
+void CT_Timer::LoopThread()
+{
+    while(true)
+    {
+        int item = -1;
+        q.wait_dequeue(item);
+        if(item == CMD_EXIT)
+        {
+            cout<<"rcv CMD_EXIT"<<endl;
+            break;
+        }
+        cout<<"item="<<item<<endl;
+        handler_(args_,item);
+    }
 }
 
 }

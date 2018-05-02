@@ -19,11 +19,13 @@ public:
     CT_Timer();
     virtual ~CT_Timer();
     int64_t Schedule(Handler handler,void *args,uint32_t delay,uint32_t interval,uint32_t times);
+    int64_t Schedule(Handler handler,void *args);
     bool SendCmd(long cmd);
     int32_t Cancel();
-    void join();
+    void Join();
 private:
-    void loop();
+    void LoopTimer();
+    void LoopThread();
     moodycamel::BlockingConcurrentQueue<long> q;
     thread t;
     uint32_t delay_;
